@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Quiz App</title>
+
+<style>
+    body {
+        background-color: #0f0f1a;
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        color: white;
+    }
+
+    .quiz-container {
+        background: #1b1b2f;
+        width: 500px;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 0 20px purple;
+    }
+
+    h2 {
+        text-align: center;
+        color: #b26cff;
+    }
+
+    .question {
+        font-size: 18px;
+        margin-bottom: 15px;
+    }
+
+    .options label {
+        display: block;
+        background: #2d2d44;
+        padding: 10px;
+        margin: 8px 0;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+
+    .options input {
+        margin-right: 10px;
+    }
+
+    .options label:hover {
+        background: #3e3e66;
+    }
+
+    .timer {
+        text-align: right;
+        color: #ff4dff;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    button {
+        background: purple;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-top: 15px;
+    }
+
+    button:hover {
+        background: #9b30ff;
+    }
+
+    .score {
+        text-align: center;
+        font-size: 22px;
+        color: #b26cff;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="quiz-container">
+    <h2>Online Quiz</h2>
+    <div class="timer" id="timer">Time: 15</div>
+    <div class="question" id="question"></div>
+
+    <div class="options" id="options"></div>
+
+    <button id="nextBtn">Next</button>
+</div>
+
+<script>
+const quizData = [
+    { q: "HTML stands for?", a: ["Hyper Text Markup Language", "High Text Machine Language", "Hyperlinks Text Mark Language", "None"], c: 0 },
+    { q: "CSS is used for?", a: ["Styling", "Programming", "Database", "Networking"], c: 0 },
+    { q: "Which tag is used for JS?", a: ["<javascript>", "<js>", "<script>", "<code>"], c: 2 },
+    { q: "Which is not a JS datatype?", a: ["String", "Boolean", "Float", "Undefined"], c: 2 },
+    { q: "Which symbol is used for id in CSS?", a: [".", "#", "*", "$"], c: 1 },
+    { q: "Which keyword declares variable?", a: ["var", "int", "string", "float"], c: 0 },
+    { q: "JS runs in?", a: ["Server", "Browser", "Compiler", "CPU"], c: 1 },
+    { q: "Which operator checks value & type?", a: ["==", "=", "===", "!"], c: 2 },
+    { q: "Which function prints output?", a: ["print()", "console.log()", "echo()", "write()"], c: 1 },
+    { q: "HTML is a?", a: ["Programming Language", "Markup Language", "Database", "OS"], c: 1 }
+];
+
+let index = 0;
+let score = 0;
+let time = 15;
+let timer;
+
+const questionEl = document.getElementById("question");
+const optionsEl = document.getElementById("options");
+const timerEl = document.getElementById("timer");
+const nextBtn = document.getElementById("nextBtn");
+
+function loadQuestion() {
+    clearInterval(timer);
+    time = 60;
+    timerEl.innerText = "Time: " + time;
+
+    timer = setInterval(() => {
+        time--;
+        timerEl.innerText = "Time: " + time;
+        if (time === 0) {
+            clearInterval(timer);
+            nextQuestion();
+        }
+    }, 1000);
+
+    let qData = quizData[index];
+    questionEl.innerText = (index + 1) + ". " + qData.q;
+    optionsEl.innerHTML = "";
+
+    qData.a.forEach((opt, i) => {
+        optionsEl.innerHTML += `
+        <label>
+            <input type="radio" name="option" value="${i}">
+            ${opt}
+        </label>`;
+    });
+
+    nextBtn.innerText = index === quizData.length - 1 ? "Submit" : "Next";
+}
+
+function nextQuestion() {
+    clearInterval(timer);
+    let selected = document.querySelector('input[name="option"]:checked');
+
+    if (selected && parseInt(selected.value) === quizData[index].c) {
+        score++;
+    }
+
+    index++;
+
+    if (index < quizData.length) {
+        loadQuestion();
+    } else {
+        showScore();
+    }
+}
+
+function showScore() {
+    document.querySelector(".quiz-container").innerHTML = `
+        <h2>Quiz Completed</h2>
+        <div class="score">Your Score: ${score} / ${quizData.length}</div>
+    `;
+}
+
+nextBtn.addEventListener("click", nextQuestion);
+
+loadQuestion();
+</script>
+
+</body>
+</html>
